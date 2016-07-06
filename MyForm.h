@@ -83,9 +83,8 @@ namespace app {
 			 PCIE_HANDLE hPCIE;
 
 			 //query area
-			 //array<Char>^ outQueryHex = gcnew array<Char>(MAX_QUERY_NUCLEAR_SIZE);
-
-
+			 static array<Char>^ QueryHex = gcnew array<Char>(MAX_QUERY_SIZE);
+			 static array<Char>^ MemoryBlock = gcnew array<Char>(MEM_SIZE);
 			 boolean end_subject = false;
 
 			 ifstream  * ptr_file;
@@ -543,7 +542,7 @@ namespace app {
 
 					 returnvalue = CovertQuery2Bit1(inQueryNuclear, MAX_QUERY_NUCLEAR_SIZE, QueryHex, 0);
 
-					 Console::WriteLine(inQueryNuclear);
+					 //Console::WriteLine(inQueryNuclear);
 					 if (!returnvalue){
 						 MessageBox::Show("Invalid input nuclear string!", "", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
 					 }
@@ -551,10 +550,10 @@ namespace app {
 					 {
 						 for (int i = 0; i < MAX_QUERY_SIZE; i++)
 						 {
-							 Console::Write("{0:X} _
-								 ", QueryHex[i]);
+							 Console::Write("{0:X} _", QueryHex[i]);
 						 }
-						 if (PCIE_DmaWrite(hPCIE, LocalAddr, &QueryHex, MAX_QUERY_SIZE))
+						 boolean pass = PCIE_DmaWrite(hPCIE, LocalAddr, QueryHex, MAX_QUERY_SIZE);
+						 if (pass)
 						 {
 							 outTextStatus->Text = "Write Query successful";
 						 }
@@ -593,9 +592,9 @@ namespace app {
 	private: System::Void textBox2_TextChanged(System::Object^  sender, System::EventArgs^  e) {
 	}
 	private: System::Void button6_Click(System::Object^  sender, System::EventArgs^  e) {
-				 static char MemoryBlock[MEM_SIZE];
+				 static char * temp = MemoryBlock;
 				 const PCIE_LOCAL_ADDRESS LocalAddr = PCIE_MEM_QUERY_ADDR;
-				 if (!PCIE_DmaRead(hPCIE, LocalAddr, MemoryBlock, MEM_SIZE))
+				 if (!PCIE_DmaRead(hPCIE, LocalAddr, &temp, MEM_SIZE))
 				 {
 					 Console::WriteLine("06:DMA Memory:PCIE_DmaRead failed");
 				 }
