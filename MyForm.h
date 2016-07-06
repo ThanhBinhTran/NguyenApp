@@ -83,7 +83,7 @@ namespace app {
 			 PCIE_HANDLE hPCIE;
 
 			 //query area
-			 array<Char>^ outQueryHex = gcnew array<Char>(MAX_QUERY_NUCLEAR_SIZE);
+			 //array<Char>^ outQueryHex = gcnew array<Char>(MAX_QUERY_NUCLEAR_SIZE);
 
 
 			 boolean end_subject = false;
@@ -147,11 +147,11 @@ namespace app {
 			for (i = 0; i < inQueryNuclearLength && indata[i] != 0 && indata[i] != 10; i++)
 			{
 
-				if (indata[i] == 'a')      { indata[i] == 'A'; }
-				else if (indata[i] == 'g') { indata[i] == 'G'; }
-				else if (indata[i] == 't') { indata[i] == 'T'; }
-				else if (indata[i] == 'c') { indata[i] == 'C'; }
-				else if (indata[i] == 'n') { indata[i] == 'N'; }
+				if (indata[i] == 'a')      { indata[i] = 'A'; }
+				else if (indata[i] == 'g') { indata[i] = 'G'; }
+				else if (indata[i] == 't') { indata[i] = 'T'; }
+				else if (indata[i] == 'c') { indata[i] = 'C'; }
+				else if (indata[i] == 'n') { indata[i] = 'N'; }
 
 				if (indata[i] == 'A')      { temp_value = A_ADN << temp_offset; }
 				else if (indata[i] == 'G') { temp_value = G_ADN << temp_offset; }
@@ -549,11 +549,12 @@ namespace app {
 					 }
 					 else
 					 {
-						 for (int i = 0; QueryHex[i] != 0; i++)
+						 for (int i = 0; i < MAX_QUERY_SIZE; i++)
 						 {
-							 Console::Write("{0:X} ", QueryHex[i]);
+							 Console::Write("{0:X} _
+								 ", QueryHex[i]);
 						 }
-						 if (PCIE_DmaWrite(hPCIE, LocalAddr, QueryHex, MAX_QUERY_SIZE))
+						 if (PCIE_DmaWrite(hPCIE, LocalAddr, &QueryHex, MAX_QUERY_SIZE))
 						 {
 							 outTextStatus->Text = "Write Query successful";
 						 }
