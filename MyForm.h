@@ -40,12 +40,14 @@ namespace app {
 
 			hPCIE = PCIE_Open(DEFAULT_PCIE_VID, DEFAULT_PCIE_DID, 0);
 			if (!hPCIE){
-				MessageBox::Show("PCIE_Open failed!", "PCIE_Load failed!", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
-			}
-			else
-			{
+				MessageBox::Show("PCIE_Open failed!", "PCIE_Load failed!",
+						MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+						
 				PCIE_Close(hPCIE);
+				button1->Enabled = false;
+				
 			}
+
 
 			//file handling
 			ptr_file = new ifstream();
@@ -80,10 +82,10 @@ namespace app {
 			 //Binh variable declaration
 
 			 static void *lib_handle;
-			 PCIE_HANDLE hPCIE;
+			 static PCIE_HANDLE hPCIE =0;
 
 			 //query area
-			 static array<Char>^ QueryHex = gcnew array<Char>(MAX_QUERY_SIZE);
+			 //static array<Char>^ QueryHex = gcnew array<Char>(MAX_QUERY_SIZE);
 			 static array<Char>^ MemoryBlock = gcnew array<Char>(MEM_SIZE);
 			 boolean end_subject = false;
 
@@ -552,7 +554,8 @@ namespace app {
 						 {
 							 Console::Write("{0:X} ", QueryHex[i]);
 						 }
-						 boolean pass = PCIE_DmaWrite(hPCIE, LocalAddr, QueryHex, MAX_QUERY_SIZE);
+                                                  
+						 boolean pass = PCIE_DmaWrite(hPCIE, PCIE_MEM_QUERY_ADDR, QueryHex, MAX_QUERY_SIZE);
 						 if (pass)
 						 {
 							 outTextStatus->Text = "Write Query successful";
@@ -565,8 +568,10 @@ namespace app {
 				 }
 	}
 	private: System::Void button3_Click(System::Object^  sender, System::EventArgs^  e) {
-				 PCIE_Unload(lib_handle);
+				PCIE_Close(hPCIE); 
+				PCIE_Unload(lib_handle);
 				 ptr_file->close();
+				 
 				 this->Close();
 	}
 
