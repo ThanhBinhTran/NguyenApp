@@ -406,7 +406,7 @@ int main(void)
       return 0;
    }
 
-   hPCIE = PCIE_Open(0,0,0);
+   hPCIE = PCIE_Open(DEFAULT_PCIE_VID,DEFAULT_PCIE_DID,0);
    if (!hPCIE){
       printf("PCIE_Open failed\r\n");
    }else{
