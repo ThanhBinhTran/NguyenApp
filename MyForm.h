@@ -592,11 +592,21 @@ namespace app {
 	private: System::Void textBox2_TextChanged(System::Object^  sender, System::EventArgs^  e) {
 	}
 	private: System::Void button6_Click(System::Object^  sender, System::EventArgs^  e) {
-				 static char * temp = MemoryBlock;
+				 char MemoryBlock[100000];
 				 const PCIE_LOCAL_ADDRESS LocalAddr = PCIE_MEM_QUERY_ADDR;
-				 if (!PCIE_DmaRead(hPCIE, LocalAddr, &temp, MEM_SIZE))
+				 boolean pass;
+				 try
 				 {
-					 Console::WriteLine("06:DMA Memory:PCIE_DmaRead failed");
+					 pass = PCIE_DmaRead(hPCIE, LocalAddr, MemoryBlock, MEM_SIZE);
+				 }
+				 catch (exception& e)
+				 {
+					 Console::WriteLine("06:DMA Memory:{");
+				 }
+				 
+				 if (!pass)
+				 {
+					 Console::WriteLine("07:DMA Memory:PCIE_DmaRead failed");
 				 }
 				 else
 				 {
