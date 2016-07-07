@@ -79,7 +79,7 @@ namespace app {
 
 			 //Binh variable declaration
 
-			 void *lib_handle;
+			 static void *lib_handle;
 			 PCIE_HANDLE hPCIE;
 
 			 //query area
