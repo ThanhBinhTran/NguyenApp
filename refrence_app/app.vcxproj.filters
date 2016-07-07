@@ -24,12 +24,18 @@
     <ClCompile Include="PCIE.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="converter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PCIE.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TERASIC_PCIE.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="converter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

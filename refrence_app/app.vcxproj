@@ -80,9 +80,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.c" />
+    <ClCompile Include="converter.c" />
     <ClCompile Include="PCIE.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="converter.h" />
     <ClInclude Include="PCIE.h" />
     <ClInclude Include="TERASIC_PCIE.h" />
   </ItemGroup>
