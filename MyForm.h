@@ -198,8 +198,8 @@ namespace app {
 						temp_offset = 0;
 					}
 				}
-				Console::WriteLine(indata[i]);
-				Console::WriteLine("{0:X}", outdata[temp_base]);
+				//Console::WriteLine(indata[i]);
+				//Console::WriteLine("{0:X}", outdata[temp_base]);
 				//printf("  [%d][%c][BASE %d][offset %d][CONVERT %d][TEMP VALUE %d]\n",i, indata[i],temp_base, temp_offset, outdata[temp_base], temp_value );
 			}
 			return true;
@@ -550,7 +550,7 @@ namespace app {
 					 {
 						 for (int i = 0; i < MAX_QUERY_SIZE; i++)
 						 {
-							 Console::Write("{0:X} _", QueryHex[i]);
+							 Console::Write("{0:X} ", QueryHex[i]);
 						 }
 						 boolean pass = PCIE_DmaWrite(hPCIE, LocalAddr, QueryHex, MAX_QUERY_SIZE);
 						 if (pass)
