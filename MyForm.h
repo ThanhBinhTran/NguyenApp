@@ -44,7 +44,7 @@ namespace app {
 						MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
 						
 				PCIE_Close(hPCIE);
-				button1->Enabled = false;
+				//button1->Enabled = false;
 				
 			}
 
@@ -140,6 +140,7 @@ namespace app {
 			temp_base = beginIdx;
 			temp_offset = 0;
 			// = indata->ToUpper();
+			cout <<endl <<"Convert instring:" << indata << endl;
 			//clean outdata
 			for (i = 0; i < inQueryNuclearLength * 3 / 8; i++)
 			{
@@ -160,7 +161,7 @@ namespace app {
 				else if (indata[i] == 'C') { temp_value = C_ADN << temp_offset; }
 				else if (indata[i] == 'N') { temp_value = N_ADN << temp_offset; }
 				else {
-					Console::WriteLine("00:invalid query at index %d, content [%d]", i, indata[i]);
+					Console::WriteLine("00:invalid query at index {0}, content:{1:X}", i, indata[i]);
 					return false;
 				}
 				outdata[temp_base] |= temp_value;
@@ -174,7 +175,7 @@ namespace app {
 					else if (indata[i] == 'C') { temp_value = C_ADN >> 2; }
 					else if (indata[i] == 'N') { temp_value = N_ADN >> 2; }
 					else {
-						Console::WriteLine("01:invalid query at index %d, content [%c]", i, indata[i]);
+						Console::WriteLine("01:invalid query at index {0}, content {1:X}", i, indata[i]);
 						return false;
 					}
 					outdata[temp_base] |= temp_value;
@@ -188,7 +189,8 @@ namespace app {
 					else if (indata[i] == 'C') { temp_value = C_ADN >> 1; }
 					else if (indata[i] == 'N') { temp_value = N_ADN >> 1; }
 					else {
-						Console::WriteLine("02:invalid query at index %d, content [%c]", i, indata[i]);
+						
+						//Console::WriteLine("02:invalid query at index {0}, content {1:X}", i, indata[i]);
 						return false;
 					}
 					outdata[temp_base] |= temp_value;
@@ -204,17 +206,19 @@ namespace app {
 				//Console::WriteLine("{0:X}", outdata[temp_base]);
 				//printf("  [%d][%c][BASE %d][offset %d][CONVERT %d][TEMP VALUE %d]\n",i, indata[i],temp_base, temp_offset, outdata[temp_base], temp_value );
 			}
+			cout << endl << "Convert outstring:" << outdata << endl;
 			return true;
 		}
 
-		boolean readSubject()
+		boolean readSubject(char outSubjectBYTE[])
 		{
-			static char outSubject[MAX_QUERY_SIZE];
-			char inSubject[MAX_QUERY_NUCLEAR_SIZE];
-			char buff_line[DATABASE_LINE_WIDTH];
-			const char * outSubject_temp = &outSubject[8];
-			const char * inSubject_temp = inSubject;
+			
+			static char inSubject[MAX_QUERY_NUCLEAR_SIZE] = {""};
+			static char buff_line[DATABASE_LINE_WIDTH];
 			int Slength = 0;
+			//reset inSubject string
+		    strcpy(inSubject, "");
+
 			while (!end_subject)
 			{
 				if (ptr_file->eof())
@@ -222,42 +226,52 @@ namespace app {
 					MessageBox::Show("Cant read file!", "", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
 					return false;
 				}
+				strcpy(buff_line, "");
 				ptr_file->getline(buff_line, DATABASE_LINE_WIDTH);
-				//String^ newlinee = Convert::ToString(buff_line[0]);
-				//Console::WriteLine(newlinee);
-				if (buff_line[0].Equals(startMaker))
+				cout << endl<<  "LINE: " << buff_line << endl;
+				if (buff_line[0].Equals(startMaker) || ptr_file->eof())
 				{
+					cout << "head subject" << endl;
 					if (first)
 					{
 						first = false;
 					}
 					else
 					{
+						CovertQuery2Bit1(inSubject, strlen(inSubject), outSubjectBYTE, 8);
+						subject_length = strlen(&outSubjectBYTE[8]);
+						outSubjectBYTE[7] = subject_ID & 0xFF;
+						outSubjectBYTE[6] = (subject_ID >> 8) & 0xFF;
+						outSubjectBYTE[5] = (subject_ID >> 16) & 0xFF;
+						outSubjectBYTE[4] = (subject_ID >> 24) & 0xFF;
+						outSubjectBYTE[3] = subject_length & 0xFF;
+						outSubjectBYTE[2] = (subject_length >> 8) & 0xFF;
+						outSubjectBYTE[1] = (subject_length >> 16) & 0xFF;
+						outSubjectBYTE[0] = (subject_length >> 24) & 0xFF;
 						end_subject = true;
-						CovertQuery2Bit1(inSubject, strlen(inSubject), outSubject, 8);
-						subject_length = strlen(inSubject) - 8;
-						outSubject[7] = subject_ID & 0xFF;
-						outSubject[6] = (subject_ID >> 8) & 0xFF;
-						outSubject[5] = (subject_ID >> 16) & 0xFF;
-						outSubject[4] = (subject_ID >> 24) & 0xFF;
-						outSubject[3] = subject_length & 0xFF;
-						outSubject[2] = (subject_length >> 8) & 0xFF;
-						outSubject[1] = (subject_length >> 16) & 0xFF;
-						outSubject[0] = (subject_length >> 24) & 0xFF;
 					}
 					subject_ID++;
-					Console::WriteLine("new SUBJECT: " + subject_ID);
+					
+					//cout << "SUBJECT INHEX:" << outSubject << endl;
 				}
 				else
 				{
-					Console::WriteLine("data SUBJECT");
+					
 					strncat(inSubject, buff_line, strlen(buff_line));
+					cout << "data line: " << buff_line << endl;
+					//cout << "insubject: " << inSubject << endl;
 				}
 			}
-			end_subject = true;
+			end_subject = false;
 			return true;
 		}
-
+		void PrintStringInHex(char indata[], int SIZE)
+		{
+			for (int i = 0; i < SIZE; i++)
+			{
+				Console::Write("{0:X} ", indata[i]);
+			}
+		}
 		void InitializeComponent(void)
 		{
 			System::Windows::Forms::ListViewItem^  listViewItem1 = (gcnew System::Windows::Forms::ListViewItem(L"Hit Address Query UnGap"));
@@ -550,11 +564,7 @@ namespace app {
 					 }
 					 else
 					 {
-						 for (int i = 0; i < MAX_QUERY_SIZE; i++)
-						 {
-							 Console::Write("{0:X} ", QueryHex[i]);
-						 }
-                                                  
+                                                
 						 boolean pass = PCIE_DmaWrite(hPCIE, PCIE_MEM_QUERY_ADDR, QueryHex, MAX_QUERY_SIZE);
 						 if (pass)
 						 {
@@ -590,7 +600,10 @@ namespace app {
 	private: System::Void outHitScore_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
 	}
 	private: System::Void button5_Click(System::Object^  sender, System::EventArgs^  e) {
-				 readSubject();
+				 static char outSubjectByte[MAX_SUBJECT_SIZE];
+				 readSubject(outSubjectByte);
+				 cout << "OUT SUBJECT: ";
+				 PrintStringInHex(outSubjectByte, 400);
 	}
 	private: System::Void tabPage1_Click(System::Object^  sender, System::EventArgs^  e) {
 	}
