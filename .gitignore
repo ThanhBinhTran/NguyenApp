@@ -1,0 +1,5 @@
+*.sdf
+Release/*.log
+Release/*.pdb
+*.obj
+*.tlog
