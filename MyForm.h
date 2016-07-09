@@ -223,7 +223,6 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 				//Console::WriteLine("{0:X}", outdata[temp_base]);
 				//printf("  [%d][%c][BASE %d][offset %d][CONVERT %d][TEMP VALUE %d]\n",i, indata[i],temp_base, temp_offset, outdata[temp_base], temp_value );
 			}
-			cout << endl << "Convert outstring:" << outdata << endl;
 			return true;
 		}
 
@@ -629,7 +628,7 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 					 //MessageBox::Show("pass!", "", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
 
 					 returnvalue = CovertQuery2Bit1(inQueryNuclear, MAX_QUERY_NUCLEAR_SIZE, QueryHex, 0);
-
+					 PrintStringInHex(QueryHex, MAX_QUERY_SIZE);
 					 //Console::WriteLine(inQueryNuclear);
 					 if (!returnvalue){
 						 MessageBox::Show("Invalid input nuclear string!", "", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
