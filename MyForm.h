@@ -67,14 +67,14 @@ namespace app {
 		}
 	private: System::Windows::Forms::Button^  button1;
 	private: System::Windows::Forms::StatusStrip^  outStatus;
-	private: System::Windows::Forms::Label^  label1;
-	private: System::Windows::Forms::Label^  label2;
-	private: System::Windows::Forms::Label^  label3;
+
+
+
 	private: System::Windows::Forms::TextBox^  inQuery;
 	private: System::Windows::Forms::RichTextBox^  outSubject;
 	private: System::Windows::Forms::Button^  button2;
 	private: System::Windows::Forms::Button^  button3;
-	private: System::Windows::Forms::Label^  label4;
+
 	private: System::Windows::Forms::Label^  outSubjectID;
 	private: System::Windows::Forms::Label^  outSubjectLength;
 	private: System::Windows::Forms::ToolStripStatusLabel^  outTextStatus;
@@ -105,17 +105,34 @@ namespace app {
 			 // Command
 			 int command = 0;
 
-	private: System::Windows::Forms::ListView^  outHitScore;
+
 	private: System::Windows::Forms::Button^  button4;
-	private: System::Windows::Forms::Button^  button5;
+
 	private: System::Windows::Forms::Button^  button6;
 	private: System::Windows::Forms::TabControl^  tabControl1;
-	private: System::Windows::Forms::TabPage^  tabPage1;
+
 	private: System::Windows::Forms::TabPage^  tabPage2;
 	private: System::Windows::Forms::RichTextBox^  outDumpMemory;
+	private: System::Windows::Forms::TabPage^  tabPage1;
+	private: System::Windows::Forms::DataGridView^  outHitScore_Grid;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column4;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column3;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column2;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Column1;
+	private: System::Windows::Forms::GroupBox^  gb_query;
 
 
 
+
+
+private: System::Windows::Forms::GroupBox^  gb_subject;
+private: System::Windows::Forms::GroupBox^  gb_control;
+
+
+private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_inQ_UnGap;
+private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_inS_UnGap;
+private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_length_UnGap;
+private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 			 //
 	protected:
 
@@ -249,6 +266,7 @@ namespace app {
 						outSubjectBYTE[1] = (subject_length >> 16) & 0xFF;
 						outSubjectBYTE[0] = (subject_length >> 24) & 0xFF;
 						end_subject = true;
+						outSubject->Text = gcnew String(inSubject);
 					}
 					subject_ID++;
 					
@@ -256,7 +274,6 @@ namespace app {
 				}
 				else
 				{
-					
 					strncat(inSubject, buff_line, strlen(buff_line));
 					cout << "data line: " << buff_line << endl;
 					//cout << "insubject: " << inSubject << endl;
@@ -272,42 +289,58 @@ namespace app {
 				Console::Write("{0:X} ", indata[i]);
 			}
 		}
+
+		boolean writeTriggerCommand(int command)
+		{
+			return PCIE_Write32(hPCIE, PCIE_USER_BAR, PCIE_CMD_ADDR, command);
+		}
+
+		void DisplaySubjectID(int subjectID)
+		{
+			gb_subject->Text = "SUBJECT [ID:" + subjectID + "]";
+		}
 		void InitializeComponent(void)
 		{
-			System::Windows::Forms::ListViewItem^  listViewItem1 = (gcnew System::Windows::Forms::ListViewItem(L"Hit Address Query UnGap"));
-			System::Windows::Forms::ListViewItem^  listViewItem2 = (gcnew System::Windows::Forms::ListViewItem(L"Hit Address Subject UnGap"));
-			System::Windows::Forms::ListViewItem^  listViewItem3 = (gcnew System::Windows::Forms::ListViewItem(L"Length UnGap"));
-			System::Windows::Forms::ListViewItem^  listViewItem4 = (gcnew System::Windows::Forms::ListViewItem(L"Hit and Score"));
 			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->outStatus = (gcnew System::Windows::Forms::StatusStrip());
 			this->outTextStatus = (gcnew System::Windows::Forms::ToolStripStatusLabel());
-			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->label2 = (gcnew System::Windows::Forms::Label());
-			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->inQuery = (gcnew System::Windows::Forms::TextBox());
 			this->outSubject = (gcnew System::Windows::Forms::RichTextBox());
-			this->button5 = (gcnew System::Windows::Forms::Button());
-			this->outHitScore = (gcnew System::Windows::Forms::ListView());
 			this->button2 = (gcnew System::Windows::Forms::Button());
 			this->button3 = (gcnew System::Windows::Forms::Button());
-			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->outSubjectID = (gcnew System::Windows::Forms::Label());
 			this->outSubjectLength = (gcnew System::Windows::Forms::Label());
 			this->button4 = (gcnew System::Windows::Forms::Button());
 			this->button6 = (gcnew System::Windows::Forms::Button());
 			this->tabControl1 = (gcnew System::Windows::Forms::TabControl());
 			this->tabPage1 = (gcnew System::Windows::Forms::TabPage());
+			this->outHitScore_Grid = (gcnew System::Windows::Forms::DataGridView());
+			this->hit_add_inQ_UnGap = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->hit_add_inS_UnGap = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->hit_length_UnGap = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->hit_add_score = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->tabPage2 = (gcnew System::Windows::Forms::TabPage());
 			this->outDumpMemory = (gcnew System::Windows::Forms::RichTextBox());
+			this->Column4 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column3 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column2 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column1 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->gb_query = (gcnew System::Windows::Forms::GroupBox());
+			this->gb_subject = (gcnew System::Windows::Forms::GroupBox());
+			this->gb_control = (gcnew System::Windows::Forms::GroupBox());
 			this->outStatus->SuspendLayout();
 			this->tabControl1->SuspendLayout();
 			this->tabPage1->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->outHitScore_Grid))->BeginInit();
 			this->tabPage2->SuspendLayout();
+			this->gb_query->SuspendLayout();
+			this->gb_subject->SuspendLayout();
+			this->gb_control->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// button1
 			// 
-			this->button1->Location = System::Drawing::Point(502, 6);
+			this->button1->Location = System::Drawing::Point(5, 15);
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(92, 23);
 			this->button1->TabIndex = 0;
@@ -318,9 +351,9 @@ namespace app {
 			// outStatus
 			// 
 			this->outStatus->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->outTextStatus });
-			this->outStatus->Location = System::Drawing::Point(0, 378);
+			this->outStatus->Location = System::Drawing::Point(0, 457);
 			this->outStatus->Name = L"outStatus";
-			this->outStatus->Size = System::Drawing::Size(606, 22);
+			this->outStatus->Size = System::Drawing::Size(806, 22);
 			this->outStatus->TabIndex = 1;
 			this->outStatus->Text = L"status here";
 			this->outStatus->ItemClicked += gcnew System::Windows::Forms::ToolStripItemClickedEventHandler(this, &MyForm::statusStrip1_ItemClicked);
@@ -330,79 +363,27 @@ namespace app {
 			this->outTextStatus->Name = L"outTextStatus";
 			this->outTextStatus->Size = System::Drawing::Size(0, 17);
 			// 
-			// label1
-			// 
-			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(12, 9);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(61, 13);
-			this->label1->TabIndex = 2;
-			this->label1->Text = L"Your query:";
-			// 
-			// label2
-			// 
-			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(13, 32);
-			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(43, 13);
-			this->label2->TabIndex = 3;
-			this->label2->Text = L"Subject";
-			this->label2->Click += gcnew System::EventHandler(this, &MyForm::label2_Click);
-			// 
-			// label3
-			// 
-			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(13, 53);
-			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(21, 13);
-			this->label3->TabIndex = 4;
-			this->label3->Text = L"ID:";
-			// 
 			// inQuery
 			// 
-			this->inQuery->Location = System::Drawing::Point(79, 6);
+			this->inQuery->Location = System::Drawing::Point(6, 16);
 			this->inQuery->Name = L"inQuery";
-			this->inQuery->Size = System::Drawing::Size(417, 20);
+			this->inQuery->Size = System::Drawing::Size(671, 20);
 			this->inQuery->TabIndex = 5;
 			this->inQuery->Text = L"ATGACGTCTATTTTCGTGAAACAATTTTCGTGAAAACGTCTAAACCAAGTCAAAAATTCGTGAATACGTCTATTTTCGTGA"
 				L"AACAATGTTAACGGATAACTAAACCAAGTCAAAAATTTTCGTGAATT";
 			// 
 			// outSubject
 			// 
-			this->outSubject->Location = System::Drawing::Point(62, 32);
+			this->outSubject->Location = System::Drawing::Point(6, 18);
 			this->outSubject->Name = L"outSubject";
-			this->outSubject->Size = System::Drawing::Size(434, 92);
+			this->outSubject->Size = System::Drawing::Size(670, 102);
 			this->outSubject->TabIndex = 6;
 			this->outSubject->Text = L"";
 			this->outSubject->TextChanged += gcnew System::EventHandler(this, &MyForm::outSubject_TextChanged);
 			// 
-			// button5
-			// 
-			this->button5->Location = System::Drawing::Point(502, 130);
-			this->button5->Name = L"button5";
-			this->button5->Size = System::Drawing::Size(92, 23);
-			this->button5->TabIndex = 2;
-			this->button5->Text = L"button5";
-			this->button5->UseVisualStyleBackColor = true;
-			this->button5->Click += gcnew System::EventHandler(this, &MyForm::button5_Click);
-			// 
-			// outHitScore
-			// 
-			this->outHitScore->GridLines = true;
-			this->outHitScore->Items->AddRange(gcnew cli::array< System::Windows::Forms::ListViewItem^  >(4) {
-				listViewItem1, listViewItem2,
-					listViewItem3, listViewItem4
-			});
-			this->outHitScore->Location = System::Drawing::Point(6, 6);
-			this->outHitScore->Name = L"outHitScore";
-			this->outHitScore->Size = System::Drawing::Size(562, 207);
-			this->outHitScore->TabIndex = 1;
-			this->outHitScore->UseCompatibleStateImageBehavior = false;
-			this->outHitScore->SelectedIndexChanged += gcnew System::EventHandler(this, &MyForm::outHitScore_SelectedIndexChanged);
-			// 
 			// button2
 			// 
-			this->button2->Location = System::Drawing::Point(502, 30);
+			this->button2->Location = System::Drawing::Point(5, 44);
 			this->button2->Name = L"button2";
 			this->button2->Size = System::Drawing::Size(92, 23);
 			this->button2->TabIndex = 0;
@@ -412,23 +393,13 @@ namespace app {
 			// 
 			// button3
 			// 
-			this->button3->Location = System::Drawing::Point(502, 101);
+			this->button3->Location = System::Drawing::Point(5, 131);
 			this->button3->Name = L"button3";
 			this->button3->Size = System::Drawing::Size(92, 23);
 			this->button3->TabIndex = 8;
 			this->button3->Text = L"Exit";
 			this->button3->UseVisualStyleBackColor = true;
 			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
-			// 
-			// label4
-			// 
-			this->label4->AutoSize = true;
-			this->label4->Location = System::Drawing::Point(13, 82);
-			this->label4->Name = L"label4";
-			this->label4->Size = System::Drawing::Size(43, 13);
-			this->label4->TabIndex = 9;
-			this->label4->Text = L"Length:";
-			this->label4->Click += gcnew System::EventHandler(this, &MyForm::label4_Click);
 			// 
 			// outSubjectID
 			// 
@@ -448,7 +419,7 @@ namespace app {
 			// 
 			// button4
 			// 
-			this->button4->Location = System::Drawing::Point(502, 53);
+			this->button4->Location = System::Drawing::Point(5, 73);
 			this->button4->Name = L"button4";
 			this->button4->Size = System::Drawing::Size(92, 23);
 			this->button4->TabIndex = 12;
@@ -458,7 +429,7 @@ namespace app {
 			// 
 			// button6
 			// 
-			this->button6->Location = System::Drawing::Point(502, 77);
+			this->button6->Location = System::Drawing::Point(5, 102);
 			this->button6->Name = L"button6";
 			this->button6->Size = System::Drawing::Size(92, 23);
 			this->button6->TabIndex = 13;
@@ -470,23 +441,67 @@ namespace app {
 			// 
 			this->tabControl1->Controls->Add(this->tabPage1);
 			this->tabControl1->Controls->Add(this->tabPage2);
-			this->tabControl1->Location = System::Drawing::Point(12, 130);
+			this->tabControl1->Location = System::Drawing::Point(7, 187);
 			this->tabControl1->Name = L"tabControl1";
 			this->tabControl1->SelectedIndex = 0;
-			this->tabControl1->Size = System::Drawing::Size(582, 245);
+			this->tabControl1->Size = System::Drawing::Size(793, 267);
 			this->tabControl1->TabIndex = 14;
 			// 
 			// tabPage1
 			// 
-			this->tabPage1->Controls->Add(this->outHitScore);
+			this->tabPage1->Controls->Add(this->outHitScore_Grid);
 			this->tabPage1->Location = System::Drawing::Point(4, 22);
 			this->tabPage1->Name = L"tabPage1";
 			this->tabPage1->Padding = System::Windows::Forms::Padding(3);
-			this->tabPage1->Size = System::Drawing::Size(574, 219);
+			this->tabPage1->Size = System::Drawing::Size(785, 241);
 			this->tabPage1->TabIndex = 0;
 			this->tabPage1->Text = L"Hit and score pairs";
 			this->tabPage1->UseVisualStyleBackColor = true;
 			this->tabPage1->Click += gcnew System::EventHandler(this, &MyForm::tabPage1_Click);
+			// 
+			// outHitScore_Grid
+			// 
+			this->outHitScore_Grid->AllowUserToDeleteRows = false;
+			this->outHitScore_Grid->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
+			this->outHitScore_Grid->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(4) {
+				this->hit_add_inQ_UnGap,
+					this->hit_add_inS_UnGap, this->hit_length_UnGap, this->hit_add_score
+			});
+			this->outHitScore_Grid->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->outHitScore_Grid->Location = System::Drawing::Point(3, 3);
+			this->outHitScore_Grid->Name = L"outHitScore_Grid";
+			this->outHitScore_Grid->ReadOnly = true;
+			this->outHitScore_Grid->Size = System::Drawing::Size(779, 235);
+			this->outHitScore_Grid->TabIndex = 0;
+			this->outHitScore_Grid->CellContentClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::outHitScore_Grid_CellContentClick);
+			// 
+			// hit_add_inQ_UnGap
+			// 
+			this->hit_add_inQ_UnGap->AutoSizeMode = System::Windows::Forms::DataGridViewAutoSizeColumnMode::Fill;
+			this->hit_add_inQ_UnGap->HeaderText = L"hit_add_inQ_UnGap";
+			this->hit_add_inQ_UnGap->Name = L"hit_add_inQ_UnGap";
+			this->hit_add_inQ_UnGap->ReadOnly = true;
+			// 
+			// hit_add_inS_UnGap
+			// 
+			this->hit_add_inS_UnGap->AutoSizeMode = System::Windows::Forms::DataGridViewAutoSizeColumnMode::Fill;
+			this->hit_add_inS_UnGap->HeaderText = L"hit_add_inS_UnGap";
+			this->hit_add_inS_UnGap->Name = L"hit_add_inS_UnGap";
+			this->hit_add_inS_UnGap->ReadOnly = true;
+			// 
+			// hit_length_UnGap
+			// 
+			this->hit_length_UnGap->AutoSizeMode = System::Windows::Forms::DataGridViewAutoSizeColumnMode::Fill;
+			this->hit_length_UnGap->HeaderText = L"hit_length_UnGap";
+			this->hit_length_UnGap->Name = L"hit_length_UnGap";
+			this->hit_length_UnGap->ReadOnly = true;
+			// 
+			// hit_add_score
+			// 
+			this->hit_add_score->AutoSizeMode = System::Windows::Forms::DataGridViewAutoSizeColumnMode::Fill;
+			this->hit_add_score->HeaderText = L"hit_add_score";
+			this->hit_add_score->Name = L"hit_add_score";
+			this->hit_add_score->ReadOnly = true;
 			// 
 			// tabPage2
 			// 
@@ -494,47 +509,103 @@ namespace app {
 			this->tabPage2->Location = System::Drawing::Point(4, 22);
 			this->tabPage2->Name = L"tabPage2";
 			this->tabPage2->Padding = System::Windows::Forms::Padding(3);
-			this->tabPage2->Size = System::Drawing::Size(574, 219);
+			this->tabPage2->Size = System::Drawing::Size(785, 241);
 			this->tabPage2->TabIndex = 1;
 			this->tabPage2->Text = L"Dump memory";
 			this->tabPage2->UseVisualStyleBackColor = true;
 			// 
 			// outDumpMemory
 			// 
-			this->outDumpMemory->Location = System::Drawing::Point(6, 6);
+			this->outDumpMemory->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->outDumpMemory->Location = System::Drawing::Point(3, 3);
 			this->outDumpMemory->Name = L"outDumpMemory";
-			this->outDumpMemory->Size = System::Drawing::Size(562, 210);
+			this->outDumpMemory->Size = System::Drawing::Size(779, 235);
 			this->outDumpMemory->TabIndex = 0;
 			this->outDumpMemory->Text = L"";
+			// 
+			// Column4
+			// 
+			this->Column4->HeaderText = L"Column4";
+			this->Column4->Name = L"Column4";
+			this->Column4->ReadOnly = true;
+			// 
+			// Column3
+			// 
+			this->Column3->HeaderText = L"Column3";
+			this->Column3->Name = L"Column3";
+			this->Column3->ReadOnly = true;
+			// 
+			// Column2
+			// 
+			this->Column2->HeaderText = L"Column2";
+			this->Column2->Name = L"Column2";
+			this->Column2->ReadOnly = true;
+			// 
+			// Column1
+			// 
+			this->Column1->HeaderText = L"Column1";
+			this->Column1->Name = L"Column1";
+			this->Column1->ReadOnly = true;
+			// 
+			// gb_query
+			// 
+			this->gb_query->Controls->Add(this->inQuery);
+			this->gb_query->Location = System::Drawing::Point(6, 3);
+			this->gb_query->Name = L"gb_query";
+			this->gb_query->Size = System::Drawing::Size(683, 51);
+			this->gb_query->TabIndex = 15;
+			this->gb_query->TabStop = false;
+			this->gb_query->Text = L"QUERY";
+			// 
+			// gb_subject
+			// 
+			this->gb_subject->Controls->Add(this->outSubject);
+			this->gb_subject->Location = System::Drawing::Point(7, 56);
+			this->gb_subject->Name = L"gb_subject";
+			this->gb_subject->Size = System::Drawing::Size(682, 128);
+			this->gb_subject->TabIndex = 6;
+			this->gb_subject->TabStop = false;
+			this->gb_subject->Text = L"SUBJECT";
+			this->gb_subject->Enter += gcnew System::EventHandler(this, &MyForm::groupBox2_Enter);
+			// 
+			// gb_control
+			// 
+			this->gb_control->Controls->Add(this->button1);
+			this->gb_control->Controls->Add(this->button2);
+			this->gb_control->Controls->Add(this->button4);
+			this->gb_control->Controls->Add(this->button6);
+			this->gb_control->Controls->Add(this->button3);
+			this->gb_control->Location = System::Drawing::Point(695, 3);
+			this->gb_control->Name = L"gb_control";
+			this->gb_control->Size = System::Drawing::Size(105, 178);
+			this->gb_control->TabIndex = 16;
+			this->gb_control->TabStop = false;
+			this->gb_control->Text = L"Control Panel";
 			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(606, 400);
-			this->Controls->Add(this->button5);
+			this->ClientSize = System::Drawing::Size(806, 479);
+			this->Controls->Add(this->gb_control);
+			this->Controls->Add(this->gb_subject);
+			this->Controls->Add(this->gb_query);
 			this->Controls->Add(this->tabControl1);
-			this->Controls->Add(this->button6);
-			this->Controls->Add(this->button4);
 			this->Controls->Add(this->outSubjectLength);
 			this->Controls->Add(this->outSubjectID);
-			this->Controls->Add(this->label4);
-			this->Controls->Add(this->button3);
-			this->Controls->Add(this->button2);
-			this->Controls->Add(this->outSubject);
-			this->Controls->Add(this->inQuery);
-			this->Controls->Add(this->label3);
-			this->Controls->Add(this->label2);
-			this->Controls->Add(this->label1);
 			this->Controls->Add(this->outStatus);
-			this->Controls->Add(this->button1);
 			this->Name = L"MyForm";
 			this->Text = L"MyForm";
 			this->outStatus->ResumeLayout(false);
 			this->outStatus->PerformLayout();
 			this->tabControl1->ResumeLayout(false);
 			this->tabPage1->ResumeLayout(false);
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->outHitScore_Grid))->EndInit();
 			this->tabPage2->ResumeLayout(false);
+			this->gb_query->ResumeLayout(false);
+			this->gb_query->PerformLayout();
+			this->gb_subject->ResumeLayout(false);
+			this->gb_control->ResumeLayout(false);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -564,16 +635,29 @@ namespace app {
 					 }
 					 else
 					 {
-                                                
+                      
+						 //write query data
 						 boolean pass = PCIE_DmaWrite(hPCIE, PCIE_MEM_QUERY_ADDR, QueryHex, MAX_QUERY_SIZE);
 						 if (pass)
 						 {
-							 outTextStatus->Text = "Write Query successful";
+							 //write trigger command 
+							 pass = writeTriggerCommand(WRITE_QUERY);
+							 if (pass)
+							 {
+								 outTextStatus->Text = "Write Query successful";
+								 DisplaySubjectID(0);
+							 }
+							 else
+							 {
+								 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+							 }
 						 }
 						 else
 						 {
 							 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
 						 }
+
+
 					 }
 				 }
 	}
@@ -596,53 +680,71 @@ namespace app {
 	private: System::Void statusStrip1_ItemClicked(System::Object^  sender, System::Windows::Forms::ToolStripItemClickedEventArgs^  e) {
 	}
 	private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
+				 static char outSubjectByte[MAX_SUBJECT_SIZE];
+				 readSubject(outSubjectByte);
+				 DisplaySubjectID(subject_ID);
+				 cout << "OUT SUBJECT: ";
+				 PrintStringInHex(outSubjectByte, 400);
+				 //write query data
+				 boolean pass = PCIE_DmaWrite(hPCIE, PCIE_MEM_SUBJECT_ADDR, outSubjectByte, MAX_SUBJECT_SIZE);
+				 if (pass)
+				 {
+					 //write trigger command 
+					 pass = writeTriggerCommand(WRITE_SUBJECT);
+					 if (pass)
+					 {
+						 outTextStatus->Text = "Write Subject successful";
+					 }
+					 else
+					 {
+						 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+					 }
+				 }
+				 else
+				 {
+					 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+				 }
 	}
 	private: System::Void outHitScore_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
 	}
 	private: System::Void button5_Click(System::Object^  sender, System::EventArgs^  e) {
-				 static char outSubjectByte[MAX_SUBJECT_SIZE];
-				 readSubject(outSubjectByte);
-				 cout << "OUT SUBJECT: ";
-				 PrintStringInHex(outSubjectByte, 400);
+
 	}
 	private: System::Void tabPage1_Click(System::Object^  sender, System::EventArgs^  e) {
 	}
 	private: System::Void textBox2_TextChanged(System::Object^  sender, System::EventArgs^  e) {
 	}
 	private: System::Void button6_Click(System::Object^  sender, System::EventArgs^  e) {
-				 char MemoryBlock[100000];
+				 char MemoryBlock[MEM_SIZE];
 				 const PCIE_LOCAL_ADDRESS LocalAddr = PCIE_MEM_QUERY_ADDR;
 				 boolean pass;
-				 try
-				 {
-					 pass = PCIE_DmaRead(hPCIE, LocalAddr, MemoryBlock, MEM_SIZE);
-				 }
-				 catch (exception& e)
-				 {
-					 Console::WriteLine("06:DMA Memory:{");
-				 }
-				 
+				 pass = PCIE_DmaRead(hPCIE, LocalAddr, MemoryBlock, MEM_SIZE);
+
 				 if (!pass)
 				 {
 					 Console::WriteLine("07:DMA Memory:PCIE_DmaRead failed");
 				 }
 				 else
 				 {
-					 outTextStatus->Text = "Dump all memory data successful!";
+					 
 					 outDumpMemory->Text = "";
 					 for (int i = 0; i < MEM_SIZE; i++)
 					 {
 						 outDumpMemory->AppendText(MemoryBlock[i] + " ");
-						 if (i % 8 == 0)
+						 if (i % 24 == 0 && i > 0)
 						 {
 							 outDumpMemory->AppendText("\n");
 						 }
+						 else if (i % 8 == 0 && i > 0)
+						 {
+							 outDumpMemory->AppendText(" _ ");
+						 }
 					 }
+					 outTextStatus->Text = "Dump all memory data successful!";
 				 }
 
 	}
 	private: System::Void button4_Click(System::Object^  sender, System::EventArgs^  e) {
-
 				 static char HitScore[MAX_HIT_SCORE_SIZE];
 				 const PCIE_LOCAL_ADDRESS LocalAddr = PCIE_MEM_SCORE_ADDR;
 				 if (!PCIE_DmaRead(hPCIE, LocalAddr, HitScore, MAX_HIT_SCORE_SIZE))
@@ -652,18 +754,19 @@ namespace app {
 				 else
 				 {
 					 outTextStatus->Text = "Read hit and score pairs successful!";
-					 outDumpMemory->Text = "";
-					 for (int i = 0; i < MAX_HIT_SCORE_SIZE; i++)
+					 outHitScore_Grid->Rows->Clear();
+					 for (int i = 8; i < MAX_HIT_SCORE_SIZE; i = i + 8)
 					 {
-						 outDumpMemory->AppendText(HitScore[i] + " ");
-						 if (i % 8 == 0)
-						 {
-							 outDumpMemory->AppendText("\n");
-						 }
+						 outHitScore_Grid->Rows->Add(
+							 HitScore[i + 0], HitScore[i + 1], HitScore[i + 2], HitScore[i + 3]);
 					 }
 				 }
 	}
 
 
-	};
+	private: System::Void outHitScore_Grid_CellContentClick(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
+	}
+private: System::Void groupBox2_Enter(System::Object^  sender, System::EventArgs^  e) {
+}
+};
 };

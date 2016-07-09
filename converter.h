@@ -42,7 +42,7 @@
 
 
 #define PCIE_USER_BAR         PCIE_BAR0
-
+#define PCIE_CMD_ADDR         0x00
 
 #define QUERY_ENTRIES_64           (6*8)                   // 256 *3 /64
 
