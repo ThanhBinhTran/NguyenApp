@@ -31,7 +31,7 @@ namespace app {
 
 			lib_handle = PCIE_Load();
 			if (!lib_handle){
-				MessageBox::Show("PCIE_Load failed!", "PCIE_Load failed!", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+				MessageBox::Show("PCIE_Load failed!", "PCIE_Load failed!", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			}
 			else
 			{
@@ -41,7 +41,7 @@ namespace app {
 			hPCIE = PCIE_Open(DEFAULT_PCIE_VID, DEFAULT_PCIE_DID, 0);
 			if (!hPCIE){
 				MessageBox::Show("PCIE_Open failed!", "PCIE_Load failed!",
-						MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+						MessageBoxButtons::OK, MessageBoxIcon::Error);
 						
 				PCIE_Close(hPCIE);
 				//button1->Enabled = false;
@@ -246,7 +246,7 @@ private: System::Windows::Forms::Label^  label1;
 			{
 				if (ptr_file->eof())
 				{
-					MessageBox::Show("Cant read file!", "", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+					MessageBox::Show("Cant read file!", "", MessageBoxButtons::OK, MessageBoxIcon::Error);
 					return false;
 				}
 				strcpy(buff_line, "");
@@ -282,6 +282,11 @@ private: System::Windows::Forms::Label^  label1;
 				else
 				{
 					strncat(inSubject, buff_line, strlen(buff_line));
+					//add end of string
+					int i = strlen(inSubject);
+					if (inSubject[i - 1] == 10){
+						inSubject[i - 1] = 0;
+					}
 					cout << "data line: " << buff_line << endl;
 					//cout << "insubject: " << inSubject << endl;
 				}
@@ -671,17 +676,17 @@ private: System::Windows::Forms::Label^  label1;
 
 				 if (inQuery->Text->Trim()->Length == 0)
 				 {
-					 MessageBox::Show("The NULL nuclear is NOT allowed!", "", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+					 MessageBox::Show("The NULL nuclear is NOT allowed!", "", MessageBoxButtons::OK, MessageBoxIcon::Error);
 				 }
 				 else
 				 {
-					 //MessageBox::Show("pass!", "", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+					 //MessageBox::Show("pass!", "", MessageBoxButtons::OK, MessageBoxIcon::Error);
 
 					 returnvalue = CovertQuery2Bit1(inQueryNuclear, MAX_QUERY_NUCLEAR_SIZE, QueryHex, 0);
 					 PrintStringInHex(QueryHex, MAX_QUERY_SIZE);
 					 //Console::WriteLine(inQueryNuclear);
 					 if (!returnvalue){
-						 MessageBox::Show("Invalid input nuclear string!", "", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+						 MessageBox::Show("Invalid input nuclear string!", "", MessageBoxButtons::OK, MessageBoxIcon::Error);
 					 }
 					 else
 					 {
@@ -699,12 +704,12 @@ private: System::Windows::Forms::Label^  label1;
 							 }
 							 else
 							 {
-								 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+								 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
 							 }
 						 }
 						 else
 						 {
-							 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+							 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
 						 }
 
 
@@ -712,11 +717,25 @@ private: System::Windows::Forms::Label^  label1;
 				 }
 	}
 	private: System::Void button3_Click(System::Object^  sender, System::EventArgs^  e) {
-				PCIE_Close(hPCIE); 
-				PCIE_Unload(lib_handle);
-				 ptr_file->close();
-				 
-				 this->Close();
+				 int result = 0;
+				 result = (int)MessageBox::Show("Do you want to exit?", "NGUYEN APPLICATION", MessageBoxButtons::YesNo, MessageBoxIcon::Warning);
+				 switch (result)
+				 {
+				 case IDYES:
+					 PCIE_Close(hPCIE);
+					 PCIE_Unload(lib_handle);
+					 ptr_file->close();
+					 this->Close();
+
+					 break;
+				 case IDNO:
+					 // Do something
+					 break;
+				 case IDCANCEL:
+					 // Do something
+					 break;
+				 }
+
 	}
 
 	private: System::Void label2_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -747,12 +766,12 @@ private: System::Windows::Forms::Label^  label1;
 					 }
 					 else
 					 {
-						 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+						 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
 					 }
 				 }
 				 else
 				 {
-					 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+					 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
 				 }
 	}
 	private: System::Void outHitScore_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
@@ -766,17 +785,29 @@ private: System::Windows::Forms::Label^  label1;
 	}
 	private: System::Void button6_Click(System::Object^  sender, System::EventArgs^  e) {
 				 char MemoryBlock[MEM_SIZE];
+				 FILE * fp;
 				 const PCIE_LOCAL_ADDRESS LocalAddr = PCIE_MEM_QUERY_ADDR;
 				 boolean pass;
 				 pass = PCIE_DmaRead(hPCIE, LocalAddr, MemoryBlock, MEM_SIZE);
 
 				 if (!pass)
 				 {
-					 Console::WriteLine("07:DMA Memory:PCIE_DmaRead failed");
+					 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
 				 }
 				 else
 				 {
-					 
+					 fp = fopen("ALL_MEMORY.HEX", "w+");
+					 for (int i = 0; i < MEM_SIZE; i++) {
+						 if (i % 24 == 0 && i != 0) {
+							 fprintf(fp, "\n");
+						 }
+						 else if (i % 8 == 0 && i != 0) {
+							 fprintf(fp, "_ ");
+						 }
+						 fprintf(fp, "%02X ", (unsigned char)MemoryBlock[i]);
+					 }
+					 fclose(fp);
+#ifdef DEBUG
 					 outDumpMemory->Text = "";
 					 for (int i = 0; i < MEM_SIZE; i++)
 					 {
@@ -790,6 +821,8 @@ private: System::Windows::Forms::Label^  label1;
 							 outDumpMemory->AppendText(" _ ");
 						 }
 					 }
+#endif // DEBUG
+
 					 outTextStatus->Text = "Dump all memory data successful!";
 				 }
 
@@ -801,7 +834,7 @@ private: System::Windows::Forms::Label^  label1;
 				 const PCIE_LOCAL_ADDRESS LocalAddr = PCIE_MEM_SCORE_ADDR;
 				 if (!PCIE_DmaRead(hPCIE, LocalAddr, HitScore, MAX_HIT_SCORE_SIZE))
 				 {
-					 Console::WriteLine("07:DMA Memory:PCIE_DmaRead failed");
+					 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
 				 }
 				 else
 				 {
@@ -812,7 +845,6 @@ private: System::Windows::Forms::Label^  label1;
 					 hs_ID = HitScore[4] + HitScore[5]<<8 + HitScore[6]<<16 + HitScore[7]<<24;
 					 hitscore_ID->Text = hs_ID + "";
 					 hitscore_length->Text = hs_length + "";
-
 					 for (int i = 8; i < MAX_HIT_SCORE_SIZE || i < hs_length*8; i = i + 8)
 					 {
 						 outHitScore_Grid->Rows->Add(
