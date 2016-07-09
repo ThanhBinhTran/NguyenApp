@@ -237,10 +237,10 @@ private: System::Windows::Forms::Label^  label1;
 		{
 			
 			static char inSubject[MAX_QUERY_NUCLEAR_SIZE] = {""};
-			static char buff_line[DATABASE_LINE_WIDTH];
+			char buff_line[DATABASE_LINE_WIDTH] = { "" };
 			int Slength = 0;
 			//reset inSubject string
-		    strcpy(inSubject, "");
+			strncpy(inSubject, "",1);
 
 			while (!end_subject)
 			{
@@ -249,7 +249,7 @@ private: System::Windows::Forms::Label^  label1;
 					MessageBox::Show("Cant read file!", "", MessageBoxButtons::OK, MessageBoxIcon::Error);
 					return false;
 				}
-				strcpy(buff_line, "");
+				//strcpy(buff_line, "");
 				ptr_file->getline(buff_line, DATABASE_LINE_WIDTH);
 				cout << endl<<  "LINE: " << buff_line << endl;
 				if (buff_line[0].Equals(startMaker) || ptr_file->eof())
@@ -307,9 +307,9 @@ private: System::Windows::Forms::Label^  label1;
 			return PCIE_Write32(hPCIE, PCIE_USER_BAR, PCIE_CMD_ADDR, command);
 		}
 
-		void DisplaySubjectID(int subjectID)
+		void DisplaySubjectID(int id, int length)
 		{
-			gb_subject->Text = "SUBJECT [ID:" + subjectID + "]";
+			gb_subject->Text = "SUBJECT [ID:" + id + "][length:" + length + "]";
 		}
 		void InitializeComponent(void)
 		{
@@ -700,7 +700,9 @@ private: System::Windows::Forms::Label^  label1;
 							 if (pass)
 							 {
 								 outTextStatus->Text = "Write Query successful";
-								 DisplaySubjectID(0);
+								 subject_ID = 0;
+								 subject_length = 0;
+								 DisplaySubjectID(subject_ID, subject_length);
 							 }
 							 else
 							 {
@@ -750,29 +752,35 @@ private: System::Windows::Forms::Label^  label1;
 	}
 	private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
 				 static char outSubjectByte[MAX_SUBJECT_SIZE];
-				 readSubject(outSubjectByte);
-				 DisplaySubjectID(subject_ID);
-				 cout << "OUT SUBJECT: ";
-				 PrintStringInHex(outSubjectByte, 400);
-				 //write query data
-				 boolean pass = PCIE_DmaWrite(hPCIE, PCIE_MEM_SUBJECT_ADDR, outSubjectByte, MAX_SUBJECT_SIZE);
+				 boolean pass;
+				 pass = readSubject(outSubjectByte);
 				 if (pass)
 				 {
-					 //write trigger command 
-					 pass = writeTriggerCommand(WRITE_SUBJECT);
+					 DisplaySubjectID(subject_ID, subject_length);
+					 cout << "OUT SUBJECT: ";
+					 PrintStringInHex(outSubjectByte, 400);
+					 //write query data
+					 pass = PCIE_DmaWrite(hPCIE, PCIE_MEM_SUBJECT_ADDR, outSubjectByte, MAX_SUBJECT_SIZE);
 					 if (pass)
 					 {
-						 outTextStatus->Text = "Write Subject successful";
+						 //write trigger command 
+						 pass = writeTriggerCommand(WRITE_SUBJECT);
+						 if (pass)
+						 {
+							 outTextStatus->Text = "Write Subject successful";
+						 }
+						 else
+						 {
+							 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
+						 }
 					 }
 					 else
 					 {
 						 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
 					 }
 				 }
-				 else
-				 {
-					 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
-				 }
+
+				 
 	}
 	private: System::Void outHitScore_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
 	}
