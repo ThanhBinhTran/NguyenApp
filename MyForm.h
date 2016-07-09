@@ -133,7 +133,14 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_inQ_UnGap;
 private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_inS_UnGap;
 private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_length_UnGap;
 private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
-			 //
+private: System::Windows::Forms::TextBox^  hitscore_length;
+
+private: System::Windows::Forms::TextBox^  hitscore_ID;
+
+private: System::Windows::Forms::Label^  label2;
+private: System::Windows::Forms::Label^  label1;
+
+		 //
 	protected:
 
 	private:
@@ -315,6 +322,10 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 			this->button6 = (gcnew System::Windows::Forms::Button());
 			this->tabControl1 = (gcnew System::Windows::Forms::TabControl());
 			this->tabPage1 = (gcnew System::Windows::Forms::TabPage());
+			this->hitscore_length = (gcnew System::Windows::Forms::TextBox());
+			this->hitscore_ID = (gcnew System::Windows::Forms::TextBox());
+			this->label2 = (gcnew System::Windows::Forms::Label());
+			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->outHitScore_Grid = (gcnew System::Windows::Forms::DataGridView());
 			this->hit_add_inQ_UnGap = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->hit_add_inS_UnGap = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
@@ -375,6 +386,7 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 			// 
 			// outSubject
 			// 
+			this->outSubject->Enabled = false;
 			this->outSubject->Location = System::Drawing::Point(6, 18);
 			this->outSubject->Name = L"outSubject";
 			this->outSubject->Size = System::Drawing::Size(670, 102);
@@ -450,6 +462,10 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 			// 
 			// tabPage1
 			// 
+			this->tabPage1->Controls->Add(this->hitscore_length);
+			this->tabPage1->Controls->Add(this->hitscore_ID);
+			this->tabPage1->Controls->Add(this->label2);
+			this->tabPage1->Controls->Add(this->label1);
 			this->tabPage1->Controls->Add(this->outHitScore_Grid);
 			this->tabPage1->Location = System::Drawing::Point(4, 22);
 			this->tabPage1->Name = L"tabPage1";
@@ -460,6 +476,40 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 			this->tabPage1->UseVisualStyleBackColor = true;
 			this->tabPage1->Click += gcnew System::EventHandler(this, &MyForm::tabPage1_Click);
 			// 
+			// hitscore_length
+			// 
+			this->hitscore_length->Enabled = false;
+			this->hitscore_length->Location = System::Drawing::Point(366, 6);
+			this->hitscore_length->Name = L"hitscore_length";
+			this->hitscore_length->Size = System::Drawing::Size(144, 20);
+			this->hitscore_length->TabIndex = 4;
+			// 
+			// hitscore_ID
+			// 
+			this->hitscore_ID->Enabled = false;
+			this->hitscore_ID->Location = System::Drawing::Point(84, 6);
+			this->hitscore_ID->Name = L"hitscore_ID";
+			this->hitscore_ID->Size = System::Drawing::Size(100, 20);
+			this->hitscore_ID->TabIndex = 3;
+			// 
+			// label2
+			// 
+			this->label2->AutoSize = true;
+			this->label2->Location = System::Drawing::Point(190, 9);
+			this->label2->Name = L"label2";
+			this->label2->Size = System::Drawing::Size(170, 13);
+			this->label2->TabIndex = 2;
+			this->label2->Text = L"NUMBER OF HIT SCORE PAIRS:";
+			// 
+			// label1
+			// 
+			this->label1->AutoSize = true;
+			this->label1->Location = System::Drawing::Point(6, 9);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(72, 13);
+			this->label1->TabIndex = 1;
+			this->label1->Text = L"SUBJECT ID:";
+			// 
 			// outHitScore_Grid
 			// 
 			this->outHitScore_Grid->AllowUserToDeleteRows = false;
@@ -468,11 +518,10 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 				this->hit_add_inQ_UnGap,
 					this->hit_add_inS_UnGap, this->hit_length_UnGap, this->hit_add_score
 			});
-			this->outHitScore_Grid->Dock = System::Windows::Forms::DockStyle::Fill;
-			this->outHitScore_Grid->Location = System::Drawing::Point(3, 3);
+			this->outHitScore_Grid->Location = System::Drawing::Point(3, 34);
 			this->outHitScore_Grid->Name = L"outHitScore_Grid";
 			this->outHitScore_Grid->ReadOnly = true;
-			this->outHitScore_Grid->Size = System::Drawing::Size(779, 235);
+			this->outHitScore_Grid->Size = System::Drawing::Size(779, 204);
 			this->outHitScore_Grid->TabIndex = 0;
 			this->outHitScore_Grid->CellContentClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::outHitScore_Grid_CellContentClick);
 			// 
@@ -601,6 +650,7 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 			this->outStatus->PerformLayout();
 			this->tabControl1->ResumeLayout(false);
 			this->tabPage1->ResumeLayout(false);
+			this->tabPage1->PerformLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->outHitScore_Grid))->EndInit();
 			this->tabPage2->ResumeLayout(false);
 			this->gb_query->ResumeLayout(false);
@@ -747,6 +797,8 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 	}
 	private: System::Void button4_Click(System::Object^  sender, System::EventArgs^  e) {
 				 static char HitScore[MAX_HIT_SCORE_SIZE];
+				 int hs_ID = 0;
+				 int hs_length = 0;
 				 const PCIE_LOCAL_ADDRESS LocalAddr = PCIE_MEM_SCORE_ADDR;
 				 if (!PCIE_DmaRead(hPCIE, LocalAddr, HitScore, MAX_HIT_SCORE_SIZE))
 				 {
@@ -756,7 +808,13 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 				 {
 					 outTextStatus->Text = "Read hit and score pairs successful!";
 					 outHitScore_Grid->Rows->Clear();
-					 for (int i = 8; i < MAX_HIT_SCORE_SIZE; i = i + 8)
+					 //display hit score 
+					 hs_length = HitScore[0] + HitScore[1] << 8 + HitScore[2] << 16 + HitScore[3] << 24;
+					 hs_ID = HitScore[4] + HitScore[5]<<8 + HitScore[6]<<16 + HitScore[7]<<24;
+					 hitscore_ID->Text = hs_ID + "";
+					 hitscore_length->Text = hs_length + "";
+
+					 for (int i = 8; i < MAX_HIT_SCORE_SIZE || i < hs_length*8; i = i + 8)
 					 {
 						 outHitScore_Grid->Rows->Add(
 							 HitScore[i + 0], HitScore[i + 1], HitScore[i + 2], HitScore[i + 3]);
@@ -768,6 +826,8 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 	private: System::Void outHitScore_Grid_CellContentClick(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) {
 	}
 private: System::Void groupBox2_Enter(System::Object^  sender, System::EventArgs^  e) {
+}
+private: System::Void HitScorePairs_Display_Click(System::Object^  sender, System::EventArgs^  e) {
 }
 };
 };

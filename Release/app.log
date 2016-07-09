@@ -1,8 +1,10 @@
-﻿Build started 7/9/2016 2:57:02 PM.
+﻿Build started 7/9/2016 4:41:31 PM.
      1>Project "C:\Users\50700176\Documents\GitHub\NguyenApp\app.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /AI"C:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral" /Zi /clr /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D _CRT_SECURE_NO_WARNINGS /D NDEBUG /D _CONSOLE /Gm- /EHa /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\mscorlib.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Data.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Drawing.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Windows.Forms.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Xml.dll" /analyze- /errorReport:prompt /clr:nostdlib MyForm.cpp
          MyForm.cpp
+     1>c:\users\50700176\documents\github\nguyenapp\MyForm.h(812): warning C4554: '<<' : check operator precedence for possible error; use parentheses to clarify precedence
+     1>c:\users\50700176\documents\github\nguyenapp\MyForm.h(813): warning C4554: '<<' : check operator precedence for possible error; use parentheses to clarify precedence
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\50700176\Documents\GitHub\NguyenApp\Release\app.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /ASSEMBLYRESOURCE:Release\app.MyForm.resources /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\50700176\Documents\GitHub\NguyenApp\Release\app.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\50700176\Documents\GitHub\NguyenApp\Release\app.lib" /MACHINE:X86 /SAFESEH Release\app.obj
          Release\converter.obj
@@ -15,4 +17,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.96
+Time Elapsed 00:00:01.79
