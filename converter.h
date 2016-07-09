@@ -44,7 +44,7 @@
 #define PCIE_USER_BAR         PCIE_BAR0
 #define PCIE_CMD_ADDR         0x00
 
-#define QUERY_ENTRIES_64           (6*8)                   // 256 *3 /64
+#define QUERY_ENTRIES_64           (12*8)                   // 256 *3 /64
 
 #define MAX_SUBJECT_NUCLEAR_SIZE   128920
 #define MAX_QUERY_NUCLEAR_SIZE     128

@@ -255,6 +255,7 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 					}
 					else
 					{
+						subject_ID++;
 						CovertQuery2Bit1(inSubject, strlen(inSubject), outSubjectBYTE, 8);
 						subject_length = strlen(&outSubjectBYTE[8]);
 						outSubjectBYTE[7] = subject_ID & 0xFF;
@@ -268,7 +269,7 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 						end_subject = true;
 						outSubject->Text = gcnew String(inSubject);
 					}
-					subject_ID++;
+					
 					
 					//cout << "SUBJECT INHEX:" << outSubject << endl;
 				}
