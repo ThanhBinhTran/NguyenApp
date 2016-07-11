@@ -52,6 +52,12 @@ namespace app {
 			//file handling
 			ptr_file = new ifstream();
 			ptr_file->open(DATABASE_FILENAME);
+
+	
+			cout << "PCIE_MEM_QUERY_ADDR " << PCIE_MEM_QUERY_ADDR << endl;
+			cout << "PCIE_MEM_SUBJECT_ADDR " << PCIE_MEM_SUBJECT_ADDR << endl;
+			cout << "PCIE_MEM_SCORE_ADDR " << PCIE_MEM_SCORE_ADDR << endl;
+
 		}
 
 	protected:
@@ -851,9 +857,15 @@ private: System::Windows::Forms::Label^  label1;
 					 //display hit score 
 					 hs_length = HitScore[0] + HitScore[1] << 8 + HitScore[2] << 16 + HitScore[3] << 24;
 					 hs_ID = HitScore[4] + HitScore[5]<<8 + HitScore[6]<<16 + HitScore[7]<<24;
+					 
 					 hitscore_ID->Text = hs_ID + "";
 					 hitscore_length->Text = hs_length + "";
-					 for (int i = 8; i < MAX_HIT_SCORE_SIZE || i < hs_length*8; i = i + 8)
+
+					 for (int i = 8; i < MAX_HIT_SCORE_SIZE ; i = i + 8)
+					 {
+						 Console::Write(HitScore[i] + " ");
+					 }
+					 for (int i = 8; i < MAX_HIT_SCORE_SIZE && i < hs_length*8; i = i + 8)
 					 {
 						 outHitScore_Grid->Rows->Add(
 							 HitScore[i + 0], HitScore[i + 1], HitScore[i + 2], HitScore[i + 3]);
