@@ -53,7 +53,7 @@ namespace app {
 			ptr_file = new ifstream();
 			ptr_file->open(DATABASE_FILENAME);
 
-	
+
 			cout << "PCIE_MEM_QUERY_ADDR " << PCIE_MEM_QUERY_ADDR << endl;
 			cout << "PCIE_MEM_SUBJECT_ADDR " << PCIE_MEM_SUBJECT_ADDR << endl;
 			cout << "PCIE_MEM_SCORE_ADDR " << PCIE_MEM_SCORE_ADDR << endl;
@@ -679,6 +679,12 @@ private: System::Windows::Forms::Label^  label1;
 				 static char inQueryNuclear[MAX_QUERY_NUCLEAR_SIZE];
 				 strcpy(inQueryNuclear, (char*)Marshal::StringToHGlobalAnsi(inQuery->Text->Trim()).ToPointer());
 				 const PCIE_LOCAL_ADDRESS LocalAddr = PCIE_MEM_QUERY_ADDR;
+				 
+				 //tobe updated
+				 ptr_file->close();
+				 ptr_file->open(DATABASE_FILENAME);
+				 subject_ID = 0;
+				 first = true; 
 
 				 if (inQuery->Text->Trim()->Length == 0)
 				 {
@@ -764,9 +770,9 @@ private: System::Windows::Forms::Label^  label1;
 				 {
 					 DisplaySubjectID(subject_ID, subject_length);
 					 cout << "OUT SUBJECT: ";
-					 PrintStringInHex(outSubjectByte, 400);
+					 PrintStringInHex(outSubjectByte, subject_length + 8);
 					 //write query data
-					 pass = PCIE_DmaWrite(hPCIE, PCIE_MEM_SUBJECT_ADDR, outSubjectByte, MAX_SUBJECT_SIZE);
+					 pass = PCIE_DmaWrite(hPCIE, PCIE_MEM_SUBJECT_ADDR, outSubjectByte, subject_length + 8);
 					 if (pass)
 					 {
 						 //write trigger command 
@@ -843,9 +849,13 @@ private: System::Windows::Forms::Label^  label1;
 	}
 	private: System::Void button4_Click(System::Object^  sender, System::EventArgs^  e) {
 				 static char HitScore[MAX_HIT_SCORE_SIZE];
+				 FILE * fp;
 				 int hs_ID = 0;
 				 int hs_length = 0;
+				 static int hs_ID_writen = 0;
+				 boolean pass = false;
 				 const PCIE_LOCAL_ADDRESS LocalAddr = PCIE_MEM_SCORE_ADDR;
+				 
 				 if (!PCIE_DmaRead(hPCIE, LocalAddr, HitScore, MAX_HIT_SCORE_SIZE))
 				 {
 					 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
@@ -855,21 +865,44 @@ private: System::Windows::Forms::Label^  label1;
 					 outTextStatus->Text = "Read hit and score pairs successful!";
 					 outHitScore_Grid->Rows->Clear();
 					 //display hit score 
-					 hs_length = HitScore[0] + HitScore[1] << 8 + HitScore[2] << 16 + HitScore[3] << 24;
-					 hs_ID = HitScore[4] + HitScore[5]<<8 + HitScore[6]<<16 + HitScore[7]<<24;
+					 hs_length = (int)HitScore[3] + (int)HitScore[2] * 256 + (int)HitScore[1] * 256 * 256 + (int)HitScore[0] * 256 * 256 * 256;
+					 hs_ID = (int)HitScore[7] + (int)HitScore[6]*256 + (int)HitScore[5]*256*256 + (int)HitScore[4]*256*256*256;
 					 
 					 hitscore_ID->Text = hs_ID + "";
 					 hitscore_length->Text = hs_length + "";
-
-					 for (int i = 8; i < MAX_HIT_SCORE_SIZE ; i = i + 8)
+					 cout << endl << "Hit score report: hs length[" << hs_length << "][" << hs_ID<<"]"<<endl;
+					 for (int i = 0; i < MAX_HIT_SCORE_SIZE ; i = i+1)
 					 {
-						 Console::Write(HitScore[i] + " ");
+						 Console::Write("{0:x} ", HitScore[i]);
 					 }
 					 for (int i = 8; i < MAX_HIT_SCORE_SIZE && i < hs_length*8; i = i + 8)
 					 {
 						 outHitScore_Grid->Rows->Add(
 							 HitScore[i + 0], HitScore[i + 1], HitScore[i + 2], HitScore[i + 3]);
 					 }
+
+					 if (subject_ID == 1)
+					 {
+						 fp = fopen("HIT_SCORE.HEX", "w");
+						 hs_ID_writen = 1;
+						 pass = true;
+					 }
+					 else if (subject_ID != hs_ID_writen)
+					 {
+						 fp = fopen("HIT_SCORE.HEX", "a+");
+						 hs_ID_writen = subject_ID;
+						 pass = true;
+					 }
+					 if (pass)
+					 {
+						 fprintf(fp, "ID %d length %d\n", hs_ID, hs_length);
+						 for (int i = 8; i < MAX_HIT_SCORE_SIZE && i < hs_length * 8; i = i + 8)
+						 {
+							 fprintf(fp, "%d %d %d %d\n", HitScore[i + 0], HitScore[i + 1], HitScore[i + 2], HitScore[i + 3]);
+						 }
+						 fclose(fp);
+					 }
+					 
 				 }
 	}
 
