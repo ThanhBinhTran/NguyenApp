@@ -145,6 +145,7 @@ private: System::Windows::Forms::TextBox^  hitscore_ID;
 
 private: System::Windows::Forms::Label^  label2;
 private: System::Windows::Forms::Label^  label1;
+private: System::Windows::Forms::Button^  button5;
 
 		 //
 	protected:
@@ -308,6 +309,42 @@ private: System::Windows::Forms::Label^  label1;
 			}
 		}
 
+		boolean sendSubject()
+		{
+			static char outSubjectByte[MAX_SUBJECT_SIZE];
+			boolean pass;
+			pass = readSubject(outSubjectByte);
+			if (pass)
+			{
+				DisplaySubjectID(subject_ID, subject_length);
+				cout << "OUT SUBJECT: ";
+				PrintStringInHex(outSubjectByte, subject_length + 8);
+				//write query data
+				pass = PCIE_DmaWrite(hPCIE, PCIE_MEM_SUBJECT_ADDR, outSubjectByte, subject_length + 8);
+				if (pass)
+				{
+					//write trigger command 
+					pass = writeTriggerCommand(WRITE_SUBJECT);
+					if (pass)
+					{
+						outTextStatus->Text = "Write Subject successful";
+					}
+					else
+					{
+						MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
+					}
+				}
+				else
+				{
+					MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
+				}
+			}
+			else
+			{
+				return false;
+			}
+			return true;
+		}
 		boolean writeTriggerCommand(int command)
 		{
 			return PCIE_Write32(hPCIE, PCIE_USER_BAR, PCIE_CMD_ADDR, command);
@@ -350,6 +387,7 @@ private: System::Windows::Forms::Label^  label1;
 			this->gb_query = (gcnew System::Windows::Forms::GroupBox());
 			this->gb_subject = (gcnew System::Windows::Forms::GroupBox());
 			this->gb_control = (gcnew System::Windows::Forms::GroupBox());
+			this->button5 = (gcnew System::Windows::Forms::Button());
 			this->outStatus->SuspendLayout();
 			this->tabControl1->SuspendLayout();
 			this->tabPage1->SuspendLayout();
@@ -416,7 +454,7 @@ private: System::Windows::Forms::Label^  label1;
 			// 
 			// button3
 			// 
-			this->button3->Location = System::Drawing::Point(5, 131);
+			this->button3->Location = System::Drawing::Point(5, 158);
 			this->button3->Name = L"button3";
 			this->button3->Size = System::Drawing::Size(92, 23);
 			this->button3->TabIndex = 8;
@@ -630,6 +668,7 @@ private: System::Windows::Forms::Label^  label1;
 			// 
 			// gb_control
 			// 
+			this->gb_control->Controls->Add(this->button5);
 			this->gb_control->Controls->Add(this->button1);
 			this->gb_control->Controls->Add(this->button2);
 			this->gb_control->Controls->Add(this->button4);
@@ -637,10 +676,19 @@ private: System::Windows::Forms::Label^  label1;
 			this->gb_control->Controls->Add(this->button3);
 			this->gb_control->Location = System::Drawing::Point(695, 3);
 			this->gb_control->Name = L"gb_control";
-			this->gb_control->Size = System::Drawing::Size(105, 178);
+			this->gb_control->Size = System::Drawing::Size(105, 200);
 			this->gb_control->TabIndex = 16;
 			this->gb_control->TabStop = false;
 			this->gb_control->Text = L"Control Panel";
+			// 
+			// button5
+			// 
+			this->button5->Location = System::Drawing::Point(5, 131);
+			this->button5->Name = L"button5";
+			this->button5->Size = System::Drawing::Size(92, 23);
+			this->button5->TabIndex = 14;
+			this->button5->Text = L"Subject Full";
+			this->button5->UseVisualStyleBackColor = true;
 			// 
 			// MyForm
 			// 
@@ -763,35 +811,7 @@ private: System::Windows::Forms::Label^  label1;
 	private: System::Void statusStrip1_ItemClicked(System::Object^  sender, System::Windows::Forms::ToolStripItemClickedEventArgs^  e) {
 	}
 	private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
-				 static char outSubjectByte[MAX_SUBJECT_SIZE];
-				 boolean pass;
-				 pass = readSubject(outSubjectByte);
-				 if (pass)
-				 {
-					 DisplaySubjectID(subject_ID, subject_length);
-					 cout << "OUT SUBJECT: ";
-					 PrintStringInHex(outSubjectByte, subject_length + 8);
-					 //write query data
-					 pass = PCIE_DmaWrite(hPCIE, PCIE_MEM_SUBJECT_ADDR, outSubjectByte, subject_length + 8);
-					 if (pass)
-					 {
-						 //write trigger command 
-						 pass = writeTriggerCommand(WRITE_SUBJECT);
-						 if (pass)
-						 {
-							 outTextStatus->Text = "Write Subject successful";
-						 }
-						 else
-						 {
-							 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
-						 }
-					 }
-					 else
-					 {
-						 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
-					 }
-				 }
-
+				 sendSubject();
 				 
 	}
 	private: System::Void outHitScore_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
