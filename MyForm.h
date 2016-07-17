@@ -327,8 +327,8 @@ private: System::Windows::Forms::Button^  button5;
 				outTextStatus->Text = "Read hit and score pairs successful!";
 				outHitScore_Grid->Rows->Clear();
 				//display hit score 
-				hs_length = (int)HitScore[0] + (int)HitScore[1] * 256 + (int)HitScore[2] * 256 * 256 + (int)HitScore[3] * 256 * 256 * 256;
-				hs_ID = (int)HitScore[7] + (int)HitScore[6] * 256 + (int)HitScore[5] * 256 * 256 + (int)HitScore[4] * 256 * 256 * 256;
+				hs_length = HitScore[3] + HitScore[2] * 256 + HitScore[1] * 256 * 256 + HitScore[0] * 256 * 256 * 256;
+				hs_ID = HitScore[7] + HitScore[6] * 256 +HitScore[5] * 256 * 256 + HitScore[4] * 256 * 256 * 256;
 
 				hitscore_ID->Text = hs_ID + "";
 				hitscore_length->Text = hs_length + "";
@@ -340,7 +340,7 @@ private: System::Windows::Forms::Button^  button5;
 				for (int i = 8; i < MAX_HIT_SCORE_SIZE && i < hs_length * 8; i = i + 8)
 				{
 					outHitScore_Grid->Rows->Add(
-						HitScore[i + 0], HitScore[i + 1], HitScore[i + 2], HitScore[i + 3]);
+						HitScore[i + 3], HitScore[i + 2], HitScore[i + 1], HitScore[i + 0]);
 				}
 				if (hs_ID == subject_ID)
 				{
