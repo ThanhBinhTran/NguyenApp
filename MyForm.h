@@ -948,7 +948,7 @@ private: System::Void HitScorePairs_Display_Click(System::Object^  sender, Syste
 private: System::Void button5_Click_1(System::Object^  sender, System::EventArgs^  e) {
 			 while (sendSubject())
 			 {
-				 while (getHitScore())
+				 while (!getHitScore())
 				 {
 					 ;
 				 }
