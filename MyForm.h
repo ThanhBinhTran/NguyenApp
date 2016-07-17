@@ -38,12 +38,12 @@ namespace app {
 				outTextStatus->Text = "PCIE Load successful";
 			}
 
-			hPCIE = PCIE_Open(DEFAULT_PCIE_VID, DEFAULT_PCIE_DID, 0);
+	//binh		hPCIE = PCIE_Open(DEFAULT_PCIE_VID, DEFAULT_PCIE_DID, 0);
 			if (!hPCIE){
 				MessageBox::Show("PCIE_Open failed!", "PCIE_Load failed!",
 						MessageBoxButtons::OK, MessageBoxIcon::Error);
 						
-				PCIE_Close(hPCIE);
+	//binh			PCIE_Close(hPCIE);
 				//button1->Enabled = false;
 				
 			}
@@ -141,11 +141,17 @@ private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_length_UnGap;
 private: System::Windows::Forms::DataGridViewTextBoxColumn^  hit_add_score;
 private: System::Windows::Forms::TextBox^  hitscore_length;
 
-private: System::Windows::Forms::TextBox^  hitscore_ID;
+
 
 private: System::Windows::Forms::Label^  label2;
 private: System::Windows::Forms::Label^  label1;
 private: System::Windows::Forms::Button^  button5;
+
+private: System::Windows::Forms::ComboBox^  hitscore_ID;
+
+
+
+
 
 		 //
 	protected:
@@ -239,7 +245,13 @@ private: System::Windows::Forms::Button^  button5;
 			}
 			return true;
 		}
-
+		void MarshalString(String ^ s, string& os) {
+			using namespace Runtime::InteropServices;
+			const char* chars =
+				(const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
+			os = chars;
+			Marshal::FreeHGlobal(IntPtr((void*)chars));
+		}
 		boolean readSubject(char outSubjectBYTE[])
 		{
 			
@@ -308,6 +320,55 @@ private: System::Windows::Forms::Button^  button5;
 				Console::Write("{0:X} ", indata[i]);
 			}
 		}
+
+		void displayHitscoreBoard(int inHitID)
+		{
+			//read file
+			FILE * ptrfile_hitscore;
+			char buff[50] = { "" };
+			int  HitIDfile;
+			int  HitLengthfile;
+			char temp[10];
+			boolean end_hitscore = false;
+			boolean found = false;
+				//file handling
+			int hs_length;
+			int hs_hs;
+			int hs_addQ_upGap;
+			int hs_addS_upGap;
+			ptrfile_hitscore = fopen("HITSCORE.HEX", "r");
+
+
+			while (fgets(buff, 80, ptrfile_hitscore) != NULL && !end_hitscore)
+			{
+				/* get a line, up to 80 chars from fr.  done if NULL */
+				if (!strncmp(buff, "ID", 2))
+				{
+					sscanf(&buff[3], "%d %s %d", &HitIDfile, &temp, &HitLengthfile);
+					cout << "head ID" << HitIDfile;
+					if (HitIDfile == inHitID)
+					{
+						cout << "found" << endl;
+						found = true;
+						hitscore_length->Text = HitLengthfile + "";
+					}
+					else if (found){
+						cout << "END" << endl;
+						end_hitscore = true;
+					}
+				}
+				else if (found)
+				{
+					cout << "BINH" << buff << endl;
+					sscanf(buff, "%d %d %d %d", &hs_addQ_upGap, &hs_addS_upGap, &hs_length, &hs_hs);
+					outHitScore_Grid->Rows->Add(
+						hs_hs, hs_length, hs_addS_upGap, hs_addQ_upGap);
+				}
+			}
+			
+			fclose(ptrfile_hitscore);  /* close the file prior to exiting the routine */
+		}
+
 		boolean getHitScore()
 		{
 			static char HitScore[MAX_HIT_SCORE_SIZE];
@@ -327,10 +388,10 @@ private: System::Windows::Forms::Button^  button5;
 				outTextStatus->Text = "Read hit and score pairs successful!";
 				outHitScore_Grid->Rows->Clear();
 				//display hit score 
-				hs_length = (HitScore[3] - '0') + (HitScore[2] - '0') * 256 + (HitScore[1] - '0') * 256 * 256 + (HitScore[0] - '0') * 256 * 256 * 256;
-				hs_ID = HitScore[7] + HitScore[6] * 256 +HitScore[5] * 256 * 256 + HitScore[4] * 256 * 256 * 256;
+				hs_length = HitScore[3] + HitScore[2] * 256 + HitScore[1] * 256 * 256 + HitScore[0] * 256 * 256 * 256;
+				hs_ID     = HitScore[7] + HitScore[6] * 256 + HitScore[5] * 256 * 256 + HitScore[4] * 256 * 256 * 256;
 
-				hitscore_ID->Text = hs_ID + "";
+				//hitscore_ID->Text = hs_ID + "";
 				hitscore_length->Text = hs_length + "";
 				cout << endl << "Hit score report: hs length[" << hs_length << "][" << hs_ID << "]" << endl;
 				for (int i = 0; i < MAX_HIT_SCORE_SIZE; i = i + 1)
@@ -435,8 +496,8 @@ private: System::Windows::Forms::Button^  button5;
 			this->button6 = (gcnew System::Windows::Forms::Button());
 			this->tabControl1 = (gcnew System::Windows::Forms::TabControl());
 			this->tabPage1 = (gcnew System::Windows::Forms::TabPage());
+			this->hitscore_ID = (gcnew System::Windows::Forms::ComboBox());
 			this->hitscore_length = (gcnew System::Windows::Forms::TextBox());
-			this->hitscore_ID = (gcnew System::Windows::Forms::TextBox());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->outHitScore_Grid = (gcnew System::Windows::Forms::DataGridView());
@@ -576,8 +637,8 @@ private: System::Windows::Forms::Button^  button5;
 			// 
 			// tabPage1
 			// 
-			this->tabPage1->Controls->Add(this->hitscore_length);
 			this->tabPage1->Controls->Add(this->hitscore_ID);
+			this->tabPage1->Controls->Add(this->hitscore_length);
 			this->tabPage1->Controls->Add(this->label2);
 			this->tabPage1->Controls->Add(this->label1);
 			this->tabPage1->Controls->Add(this->outHitScore_Grid);
@@ -590,26 +651,27 @@ private: System::Windows::Forms::Button^  button5;
 			this->tabPage1->UseVisualStyleBackColor = true;
 			this->tabPage1->Click += gcnew System::EventHandler(this, &MyForm::tabPage1_Click);
 			// 
+			// hitscore_ID
+			// 
+			this->hitscore_ID->FormattingEnabled = true;
+			this->hitscore_ID->Location = System::Drawing::Point(76, 4);
+			this->hitscore_ID->Name = L"hitscore_ID";
+			this->hitscore_ID->Size = System::Drawing::Size(121, 21);
+			this->hitscore_ID->TabIndex = 5;
+			this->hitscore_ID->SelectedIndexChanged += gcnew System::EventHandler(this, &MyForm::comboBox1_SelectedIndexChanged);
+			// 
 			// hitscore_length
 			// 
 			this->hitscore_length->Enabled = false;
-			this->hitscore_length->Location = System::Drawing::Point(366, 6);
+			this->hitscore_length->Location = System::Drawing::Point(376, 6);
 			this->hitscore_length->Name = L"hitscore_length";
 			this->hitscore_length->Size = System::Drawing::Size(144, 20);
 			this->hitscore_length->TabIndex = 4;
 			// 
-			// hitscore_ID
-			// 
-			this->hitscore_ID->Enabled = false;
-			this->hitscore_ID->Location = System::Drawing::Point(84, 6);
-			this->hitscore_ID->Name = L"hitscore_ID";
-			this->hitscore_ID->Size = System::Drawing::Size(100, 20);
-			this->hitscore_ID->TabIndex = 3;
-			// 
 			// label2
 			// 
 			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(190, 9);
+			this->label2->Location = System::Drawing::Point(200, 9);
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(170, 13);
 			this->label2->TabIndex = 2;
@@ -946,13 +1008,41 @@ private: System::Void groupBox2_Enter(System::Object^  sender, System::EventArgs
 private: System::Void HitScorePairs_Display_Click(System::Object^  sender, System::EventArgs^  e) {
 }
 private: System::Void button5_Click_1(System::Object^  sender, System::EventArgs^  e) {
+			 hitscore_ID->Items->Clear();
 			 while (sendSubject())
 			 {
+				 hitscore_ID->Items->Add(subject_ID);
 				 while (!getHitScore())
 				 {
 					 ;
 				 }
 			 }
+}
+private: System::Void button7_Click(System::Object^  sender, System::EventArgs^  e) {
+			 static char test[] = { 0, 0, 0, 4, 0, 0, 0, 1, 2 };
+			 int length;
+			 length = test[0] + test[1] + test[2] + test[3];
+			 for (int i = 0; i < 10; i++)
+			 {
+				 Console::Write("{0:x} ", test[i]);
+			 }
+			 hitscore_length->Text = length + "";
+			 for (int i = 0; i < 25; i++)
+			 {
+				 hitscore_ID->Items->Add(i);
+			 }
+}
+private: System::Void comboBox1_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
+			 string hitscore_string;
+			 MarshalString(hitscore_ID->SelectedItem->ToString(), hitscore_string);
+			 int inHitScore_ID = stoi(hitscore_string);
+			 cout << "index" << inHitScore_ID;
+			 outHitScore_Grid->Rows->Clear();
+			 displayHitscoreBoard(inHitScore_ID);
+			 String^ sHitID = hitscore_ID->SelectedItem->ToString();
+}
+private: System::Void button8_Click(System::Object^  sender, System::EventArgs^  e) {
+			 hitscore_ID->Items->Clear();
 }
 };
 };
