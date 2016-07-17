@@ -308,7 +308,73 @@ private: System::Windows::Forms::Button^  button5;
 				Console::Write("{0:X} ", indata[i]);
 			}
 		}
+		boolean getHitScore()
+		{
+			static char HitScore[MAX_HIT_SCORE_SIZE];
+			FILE * fp;
+			int hs_ID = 0;
+			int hs_length = 0;
+			static int hs_ID_writen = 0;
+			boolean pass = false;
+			const PCIE_LOCAL_ADDRESS LocalAddr = PCIE_MEM_SCORE_ADDR;
 
+			if (!PCIE_DmaRead(hPCIE, LocalAddr, HitScore, MAX_HIT_SCORE_SIZE))
+			{
+				MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+			else
+			{
+				outTextStatus->Text = "Read hit and score pairs successful!";
+				outHitScore_Grid->Rows->Clear();
+				//display hit score 
+				hs_length = (int)HitScore[3] + (int)HitScore[2] * 256 + (int)HitScore[1] * 256 * 256 + (int)HitScore[0] * 256 * 256 * 256;
+				hs_ID = (int)HitScore[7] + (int)HitScore[6] * 256 + (int)HitScore[5] * 256 * 256 + (int)HitScore[4] * 256 * 256 * 256;
+
+				hitscore_ID->Text = hs_ID + "";
+				hitscore_length->Text = hs_length + "";
+				cout << endl << "Hit score report: hs length[" << hs_length << "][" << hs_ID << "]" << endl;
+				for (int i = 0; i < MAX_HIT_SCORE_SIZE; i = i + 1)
+				{
+					Console::Write("{0:x} ", HitScore[i]);
+				}
+				for (int i = 8; i < MAX_HIT_SCORE_SIZE && i < hs_length * 8; i = i + 8)
+				{
+					outHitScore_Grid->Rows->Add(
+						HitScore[i + 0], HitScore[i + 1], HitScore[i + 2], HitScore[i + 3]);
+				}
+				if (hs_ID == subject_ID)
+				{
+					if (subject_ID == 1)
+					{
+						fp = fopen("HIT_SCORE.HEX", "w");
+						hs_ID_writen = 1;
+						pass = true;
+					}
+					else if (subject_ID != hs_ID_writen)
+					{
+						fp = fopen("HIT_SCORE.HEX", "a+");
+						hs_ID_writen = subject_ID;
+						pass = true;
+					}
+					if (pass)
+					{
+						fprintf(fp, "ID %d length %d\n", hs_ID, hs_length);
+						for (int i = 8; i < MAX_HIT_SCORE_SIZE && i < hs_length * 8; i = i + 8)
+						{
+							fprintf(fp, "%d %d %d %d\n", HitScore[i + 0], HitScore[i + 1], HitScore[i + 2], HitScore[i + 3]);
+						}
+						fclose(fp);
+					}
+				}
+				else
+				{
+					return false;
+				}
+				
+
+			}
+			return true;
+		}
 		boolean sendSubject()
 		{
 			static char outSubjectByte[MAX_SUBJECT_SIZE];
@@ -689,6 +755,7 @@ private: System::Windows::Forms::Button^  button5;
 			this->button5->TabIndex = 14;
 			this->button5->Text = L"Subject Full";
 			this->button5->UseVisualStyleBackColor = true;
+			this->button5->Click += gcnew System::EventHandler(this, &MyForm::button5_Click_1);
 			// 
 			// MyForm
 			// 
@@ -868,62 +935,7 @@ private: System::Windows::Forms::Button^  button5;
 
 	}
 	private: System::Void button4_Click(System::Object^  sender, System::EventArgs^  e) {
-				 static char HitScore[MAX_HIT_SCORE_SIZE];
-				 FILE * fp;
-				 int hs_ID = 0;
-				 int hs_length = 0;
-				 static int hs_ID_writen = 0;
-				 boolean pass = false;
-				 const PCIE_LOCAL_ADDRESS LocalAddr = PCIE_MEM_SCORE_ADDR;
-				 
-				 if (!PCIE_DmaRead(hPCIE, LocalAddr, HitScore, MAX_HIT_SCORE_SIZE))
-				 {
-					 MessageBox::Show("PCIE DMA Memory Write failed!\n\nPlease reboot your PC", "DMA Memory ERROR", MessageBoxButtons::OK, MessageBoxIcon::Error);
-				 }
-				 else
-				 {
-					 outTextStatus->Text = "Read hit and score pairs successful!";
-					 outHitScore_Grid->Rows->Clear();
-					 //display hit score 
-					 hs_length = (int)HitScore[3] + (int)HitScore[2] * 256 + (int)HitScore[1] * 256 * 256 + (int)HitScore[0] * 256 * 256 * 256;
-					 hs_ID = (int)HitScore[7] + (int)HitScore[6]*256 + (int)HitScore[5]*256*256 + (int)HitScore[4]*256*256*256;
-					 
-					 hitscore_ID->Text = hs_ID + "";
-					 hitscore_length->Text = hs_length + "";
-					 cout << endl << "Hit score report: hs length[" << hs_length << "][" << hs_ID<<"]"<<endl;
-					 for (int i = 0; i < MAX_HIT_SCORE_SIZE ; i = i+1)
-					 {
-						 Console::Write("{0:x} ", HitScore[i]);
-					 }
-					 for (int i = 8; i < MAX_HIT_SCORE_SIZE && i < hs_length*8; i = i + 8)
-					 {
-						 outHitScore_Grid->Rows->Add(
-							 HitScore[i + 0], HitScore[i + 1], HitScore[i + 2], HitScore[i + 3]);
-					 }
-
-					 if (subject_ID == 1)
-					 {
-						 fp = fopen("HIT_SCORE.HEX", "w");
-						 hs_ID_writen = 1;
-						 pass = true;
-					 }
-					 else if (subject_ID != hs_ID_writen)
-					 {
-						 fp = fopen("HIT_SCORE.HEX", "a+");
-						 hs_ID_writen = subject_ID;
-						 pass = true;
-					 }
-					 if (pass)
-					 {
-						 fprintf(fp, "ID %d length %d\n", hs_ID, hs_length);
-						 for (int i = 8; i < MAX_HIT_SCORE_SIZE && i < hs_length * 8; i = i + 8)
-						 {
-							 fprintf(fp, "%d %d %d %d\n", HitScore[i + 0], HitScore[i + 1], HitScore[i + 2], HitScore[i + 3]);
-						 }
-						 fclose(fp);
-					 }
-					 
-				 }
+				 getHitScore();
 	}
 
 
@@ -932,6 +944,15 @@ private: System::Windows::Forms::Button^  button5;
 private: System::Void groupBox2_Enter(System::Object^  sender, System::EventArgs^  e) {
 }
 private: System::Void HitScorePairs_Display_Click(System::Object^  sender, System::EventArgs^  e) {
+}
+private: System::Void button5_Click_1(System::Object^  sender, System::EventArgs^  e) {
+			 while (sendSubject())
+			 {
+				 while (getHitScore())
+				 {
+					 ;
+				 }
+			 }
 }
 };
 };
