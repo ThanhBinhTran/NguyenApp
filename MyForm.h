@@ -327,7 +327,7 @@ private: System::Windows::Forms::Button^  button5;
 				outTextStatus->Text = "Read hit and score pairs successful!";
 				outHitScore_Grid->Rows->Clear();
 				//display hit score 
-				hs_length = HitScore[3] + HitScore[2] * 256 + HitScore[1] * 256 * 256 + HitScore[0] * 256 * 256 * 256;
+				hs_length = (HitScore[3] - '0') + (HitScore[2] - '0') * 256 + (HitScore[1] - '0') * 256 * 256 + (HitScore[0] - '0') * 256 * 256 * 256;
 				hs_ID = HitScore[7] + HitScore[6] * 256 +HitScore[5] * 256 * 256 + HitScore[4] * 256 * 256 * 256;
 
 				hitscore_ID->Text = hs_ID + "";
