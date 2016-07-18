@@ -388,7 +388,7 @@ private: System::Windows::Forms::ComboBox^  hitscore_ID;
 				outTextStatus->Text = "Read hit and score pairs successful!";
 				outHitScore_Grid->Rows->Clear();
 				//display hit score 
-				hs_length = HitScore[3] + HitScore[2] * 256 + HitScore[1] * 256 * 256 + HitScore[0] * 256 * 256 * 256;
+				hs_length = HitScore[3];//stoi(HitScore, 0, 3); // [3] + HitScore[2] * 256 + HitScore[1] * 256 * 256 + HitScore[0] * 256 * 256 * 256;
 				hs_ID     = HitScore[7] + HitScore[6] * 256 + HitScore[5] * 256 * 256 + HitScore[4] * 256 * 256 * 256;
 
 				//hitscore_ID->Text = hs_ID + "";
@@ -401,7 +401,7 @@ private: System::Windows::Forms::ComboBox^  hitscore_ID;
 				for (int i = 8; i < MAX_HIT_SCORE_SIZE && i < hs_length * 8; i = i + 8)
 				{
 					outHitScore_Grid->Rows->Add(
-						HitScore[i + 3], HitScore[i + 2], HitScore[i + 1], HitScore[i + 0]);
+						HitScore[i + 3]+1, HitScore[i + 2]+1, HitScore[i + 1], HitScore[i + 1]*2);
 				}
 				if (hs_ID == subject_ID)
 				{
